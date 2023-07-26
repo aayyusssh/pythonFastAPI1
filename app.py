@@ -20,16 +20,17 @@ async def upload_csv(file: UploadFile = File(...)):
     try:
      contents = await file.read()
      df = pd.read_excel(contents)
-     print(df)
      df.to_sql("mytable",engine, if_exists="replace",index=False)
      return {"message": "File Uploaded Successfully"}
     except Exception as e:
-       print(f"Error: {e}")
        return {"Error":e}
     
 
 @app.get("/get_data/")
 async def get_data():
-   df = pd.read_sql_query("SELECT * FROM mytable",engine)
-   data = df.to_dict(orient='records')
-   return data
+    try:
+      df = pd.read_sql_query("SELECT * FROM mytable",engine)
+      data = df.to_dict(orient='records')
+      return data
+    except Exception as e:
+        return{"Error":e}
